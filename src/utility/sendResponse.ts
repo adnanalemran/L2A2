@@ -14,7 +14,9 @@ const sendResponse = <T>(res: Response, payload: TResponse<T>) => {
         message: payload.message,
     };
     if (payload.error === undefined) {
-        response.data = payload.data ?? null;
+        if (payload.data !== undefined) {
+            response.data = payload.data;
+        }
     } else {
         response.error = payload.error;
     }

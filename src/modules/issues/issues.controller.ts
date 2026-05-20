@@ -13,7 +13,7 @@ import HttpError from "../../utility/HttpError";
 
 const createIssue = (async (req: Request<{}, Issue, CreateIssuePayload>, res: Response) => {
     try {
-        req.body.reporter_id = (req.decodedToken as JwtPayload | undefined)?.id as number | undefined;
+        req.body.reporter_id = (req.decodedToken as JwtPayload)?.id as number;
 
         const data = await issuesService.createIssueIntoDB(req.body);
 
@@ -61,9 +61,9 @@ const updateIssue = (async (req: Request<{ id: string }, Issue | string, UpdateI
     try {
         const { id } = req.params;
 
-        const user = req.decodedToken as JwtPayload | undefined;
+        const user = req.decodedToken as JwtPayload;
 
-        const data = await issuesService.updateIssueInDB(id as string, user as unknown as Reporter | undefined, req.body);
+        const data = await issuesService.updateIssueInDB(id as string, user as unknown as Reporter , req.body);
        if (data.status === 200) {
             return sendSuccess(res, data.data, data.status);
         } else {
@@ -82,12 +82,12 @@ const updateIssue = (async (req: Request<{ id: string }, Issue | string, UpdateI
 const deleteIssue = (async (req: Request<{ id: string }>, res: Response) => {
     try {
         const { id } = req.params;
-        const user = req.decodedToken as JwtPayload | undefined;
-        const userPayload = user as unknown as Reporter | undefined;
+        const user = req.decodedToken as JwtPayload ;
+        const userPayload = user as unknown as Reporter ;
         if (userPayload?.role === "maintainer") {
-            const data = await issuesService.deleteIssueFromDB(id as string);
+            await issuesService.deleteIssueFromDB(id as string);
 
-            return sendSuccess(res, 200, "Issue deleted successfully");
+            return sendSuccess(res, undefined, 200, "Issue deleted successfully");
         } else {
             return sendError(res, "You are not a maintainer", 403, "Unauthorized");
         }
