@@ -1,6 +1,7 @@
 import express, { Application, Request, Response } from 'express'
-import { globalErrorHandler } from './middleware/globalErrorHandler.js';
-import { authRoute } from './modules/auth/auth.route.js';
+import { globalErrorHandler } from './middleware/globalErrorHandler.ts';
+import { authRoute } from './modules/auth/auth.route.ts';
+import { issuesRoute } from './modules/issues/issues.route.ts';
  
 export const app: Application = express()
 
@@ -19,7 +20,7 @@ app.get('/', (req: Request, res: Response) => {
 
 // Importing Routes
 app.use('/api/auth', authRoute)
-
+app.use('/api/issues', issuesRoute)
 
 // Global Error Handler
 app.use(globalErrorHandler);

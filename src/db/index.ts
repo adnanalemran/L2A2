@@ -1,14 +1,14 @@
 import { Pool } from "pg";
-import config from "../config/index.js";
+import config from "../config/index.ts";
 
 export const pool = new Pool({
-    connectionString: config.databaseUrl,
+  connectionString: config.databaseUrl,
 });
 
 export const initDB = async () => {
-    try {
-        // Users Table
-        await pool.query(`
+  try {
+    // Users Table
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
 
@@ -28,12 +28,12 @@ export const initDB = async () => {
       );
     `);
 
-        // Issues Table
-        await pool.query(`
+    // Issues Table
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS issues (
         id SERIAL PRIMARY KEY,
 
-        reporter_id INT NOT NULL,
+        
 
         title VARCHAR(150) NOT NULL,
 
@@ -46,7 +46,7 @@ export const initDB = async () => {
         status VARCHAR(20)
           DEFAULT 'open'
           CHECK (status IN ('open', 'in_progress', 'resolved')),
-
+          reporter_id INT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -58,8 +58,8 @@ export const initDB = async () => {
       );
     `);
 
-        console.log("Database connected successfully");
-    } catch (err) {
-        console.error("Error initializing database:", err);
-    }
+    console.log("Database connected successfully");
+  } catch (err) {
+    console.error("Error initializing database:", err);
+  }
 };
