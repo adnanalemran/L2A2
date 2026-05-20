@@ -43,7 +43,6 @@ const updateIssue = (async (req: Request, res: Response) => {
        
         const user = req.decodedToken;
        
-
         const data = await issuesService.updateIssueInDB(id as string, user, req.body);
         return sendSuccess(res, data, 200, "Issue updated successfully");
     }
@@ -52,10 +51,29 @@ const updateIssue = (async (req: Request, res: Response) => {
     }
 })
 
+const deleteIssue = (async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;  
+        const user = req.decodedToken;
+        if(user?.role === "maintainer") {
+            const data = await issuesService.deleteIssueFromDB(id as string);
+       
+            return sendSuccess(res, data, 200, "Issue deleted successfully");
+        } else {
+            return sendError(res, "You are not a maintainer", 403, "Unauthorized");
+        }
+    }
+    catch (err: any) {
+        return sendError(res, err.message, 500, "Failed to delete issue")
+    }
+})
+
+
 export const issuesController = {
     createIssue,
     singleIssue,
     getAllIssues,
-    updateIssue
+    updateIssue,
+    deleteIssue
 
 }
