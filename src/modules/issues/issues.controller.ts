@@ -32,7 +32,9 @@ const createIssue = (async (req: Request<{}, Issue, CreateIssuePayload>, res: Re
 const singleIssue = (async (req: Request<{ id: string }>, res: Response) => {
     try {
         const data = await issuesService.getIssueByIdIntoDB(req.params.id as string);
+
         return sendSuccess(res, data, 200);
+
     }
     catch (err: unknown) {
         if (err instanceof HttpError) {

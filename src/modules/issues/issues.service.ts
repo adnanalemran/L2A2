@@ -38,7 +38,7 @@ const getIssueByIdIntoDB = async (id: string): Promise<Issue> => {
     try {
         const result = await pool.query(`SELECT * FROM issues WHERE id = $1`, [id]);
         if (result.rows.length === 0) {
-            throw new Error("Issue not found");
+            throw new HttpError(404, "Issue not found");
         }
         const issue: IssueRow = result.rows[0];
         const reporterResult = await pool.query<Reporter>(`SELECT id, name, role FROM users WHERE id = $1`, [issue.reporter_id]);
@@ -57,6 +57,9 @@ const getIssueByIdIntoDB = async (id: string): Promise<Issue> => {
 
 
     } catch (err: unknown) {
+        if (err instanceof HttpError) {
+            throw err;
+        }
         const message = err instanceof Error ? err.message : String(err);
         throw new Error(message || "Failed to get issue");
     }
@@ -149,7 +152,7 @@ const updateIssueInDB = async (
         //find issue by id
         const productResult = await pool.query(`SELECT * FROM issues WHERE id = $1`, [id]);
         if (productResult.rows.length === 0) {
-            throw new Error("Issue not found");
+            return { data: "Issue not found", status: 404 };
         }
         //find user by user id and issue id
         const ownerResult = await pool.query(`SELECT * FROM users WHERE id = $1`, [productResult.rows[0].reporter_id]);
@@ -183,9 +186,9 @@ const deleteIssueFromDB = async (id: string) => {
     try {
         const result = await pool.query(`DELETE FROM issues WHERE id = $1 RETURNING *`, [id]);
         if (result.rows.length === 0) {
-            throw new Error("Issue not found");
+            return { data: "Issue not found", status: 404 };
         }
-        return result.rows[0];
+        return { data: result.rows[0], status: 200 };
     } catch (err: unknown) {
         const message = err instanceof Error ? err.message : String(err);
         throw new Error(message || "Failed to delete issue");
