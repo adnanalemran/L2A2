@@ -1,70 +1,103 @@
 import { issuesService } from "./issues.service";
 import type { Request, Response } from "express";
 import { sendError, sendSuccess } from "../../utility/sendResponse";
+import type {
+    CreateIssuePayload,
+    GetAllIssuesQuery,
+    Issue,
+    UpdateIssuePayload,
+    Reporter,
+} from "./issues.interfaces";
+import type { JwtPayload } from "jsonwebtoken";
+import HttpError from "../../utility/HttpError";
 
-const createIssue = (async (req: Request, res: Response) => {
+const createIssue = (async (req: Request<{}, Issue, CreateIssuePayload>, res: Response) => {
     try {
-        req.body.reporter_id = req.decodedToken?.id
+        req.body.reporter_id = (req.decodedToken as JwtPayload | undefined)?.id as number | undefined;
 
         const data = await issuesService.createIssueIntoDB(req.body);
 
         return sendSuccess(res, data, 201, "Issue created successfully");
 
     }
-    catch (err: any) {
-        return sendError(res, err.message, 500, "Failed to create issue")
+    catch (err: unknown) {
+        if (err instanceof HttpError) {
+            return sendError(res, err.message, err.status, err.message);
+        }
+        const message = err instanceof Error ? err.message : String(err);
+        return sendError(res, message, 500, "Failed to create issue")
     }
 })
 
-const singleIssue = (async (req: Request, res: Response) => {
+const singleIssue = (async (req: Request<{ id: string }>, res: Response) => {
     try {
         const data = await issuesService.getIssueByIdIntoDB(req.params.id as string);
-        const { reporter_id: _, ...issueData } = data
-        return sendSuccess(res, issueData, 200);
+        return sendSuccess(res, data, 200);
     }
-    catch (err: any) {
-        return sendError(res, err.message, 500, "Failed to find issue")
+    catch (err: unknown) {
+        if (err instanceof HttpError) {
+            return sendError(res, err.message, err.status, err.message);
+        }
+        const message = err instanceof Error ? err.message : String(err);
+        return sendError(res, message, 500, "Failed to find issue")
     }
 })
 
-const getAllIssues = (async (req: Request, res: Response) => {
+const getAllIssues = (async (req: Request<{}, Issue[] | Issue, {}, GetAllIssuesQuery>, res: Response) => {
     try {
         const data = await issuesService.getAllIssuesIntoDB(req.query);
         return sendSuccess(res, data, 200);
     }
-    catch (err: any) {
-        return sendError(res, err.message, 500, "Failed to find issues")
+    catch (err: unknown) {
+        if (err instanceof HttpError) {
+            return sendError(res, err.message, err.status, err.message);
+        }
+        const message = err instanceof Error ? err.message : String(err);
+        return sendError(res, message, 500, "Failed to find issues")
     }
 })
 
-const updateIssue = (async (req: Request, res: Response) => {
+const updateIssue = (async (req: Request<{ id: string }, Issue | string, UpdateIssuePayload>, res: Response) => {
     try {
         const { id } = req.params;
-       
-        const user = req.decodedToken;
-       
-        const data = await issuesService.updateIssueInDB(id as string, user, req.body);
-        return sendSuccess(res, data, 200, "Issue updated successfully");
+
+        const user = req.decodedToken as JwtPayload | undefined;
+
+        const data = await issuesService.updateIssueInDB(id as string, user as unknown as Reporter | undefined, req.body);
+       if (data.status === 200) {
+            return sendSuccess(res, data.data, data.status);
+        } else {
+            return sendError(res, data.data, data.status, "Aunthorization error");
+        }
     }
-    catch (err: any) {
-        return sendError(res, err.message, 500, "Failed to update issue")
+    catch (err: unknown) {
+        if (err instanceof HttpError) {
+            return sendError(res, err.message, err.status, err.message);
+        }
+        const message = err instanceof Error ? err.message : String(err);
+        return sendError(res, message, 500, "Failed to update issue")
     }
 })
 
-const deleteIssue = (async (req: Request, res: Response) => {
+const deleteIssue = (async (req: Request<{ id: string }>, res: Response) => {
     try {
-        const { id } = req.params;  
-        const user = req.decodedToken;
-        if(user?.role === "maintainer") {
+        const { id } = req.params;
+        const user = req.decodedToken as JwtPayload | undefined;
+        const userPayload = user as unknown as Reporter | undefined;
+        if (userPayload?.role === "maintainer") {
             const data = await issuesService.deleteIssueFromDB(id as string);
-       
-            return sendSuccess(res, data, 200, "Issue deleted successfully");
+
+            return sendSuccess(res, 200, "Issue deleted successfully");
         } else {
             return sendError(res, "You are not a maintainer", 403, "Unauthorized");
         }
     }
-    catch (err: any) {
-        return sendError(res, err.message, 500, "Failed to delete issue")
+    catch (err: unknown) {
+        if (err instanceof HttpError) {
+            return sendError(res, err.message, err.status, err.message);
+        }
+        const message = err instanceof Error ? err.message : String(err);
+        return sendError(res, message, 404, "not found")
     }
 })
 

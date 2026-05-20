@@ -51,11 +51,7 @@ export const initDB = async () => {
 
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-        CONSTRAINT fk_reporter
-          FOREIGN KEY (reporter_id)
-          REFERENCES users(id)
-          ON DELETE CASCADE
-      );
+      
     `);
 
     console.log("Database connected successfully");
