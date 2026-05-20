@@ -8,15 +8,38 @@ const createIssue = (async (req: Request, res: Response) => {
 
         const data = await issuesService.createIssueIntoDB(req.body);
 
-        return sendSuccess(res, { createdIssue: data }, 201, "Issue created successfully");
- 
+        return sendSuccess(res, data, 201, "Issue created successfully");
+
     }
     catch (err: any) {
-        return sendError (res, err.message, 500, "Failed to create issue")
+        return sendError(res, err.message, 500, "Failed to create issue")
+    }
+})
+
+const singleIssue = (async (req: Request, res: Response) => {
+    try {
+        const data = await issuesService.getIssueByIdIntoDB(req.params.id as string);
+        const { reporter_id: _, ...issueData } = data
+        return sendSuccess(res, issueData, 200, "Issue found successfully");
+    }
+    catch (err: any) {
+        return sendError(res, err.message, 500, "Failed to find issue")
+    }
+})
+
+const getAllIssues = (async (req: Request, res: Response) => {
+    try {
+        const data = await issuesService.getAllIssuesIntoDB(req.query);
+        return sendSuccess(res, data, 200, "Issues found successfully");
+    }
+    catch (err: any) {
+        return sendError(res, err.message, 500, "Failed to find issues")
     }
 })
 
 export const issuesController = {
     createIssue,
+    singleIssue,
+    getAllIssues
 
 }

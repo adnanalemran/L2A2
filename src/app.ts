@@ -9,7 +9,7 @@ export const app: Application = express()
 // Middleware
 app.use(express.json())
 app.use(express.text())
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true })) 
 
 app.get('/', (req: Request, res: Response) => {
     res.status(200).json({
