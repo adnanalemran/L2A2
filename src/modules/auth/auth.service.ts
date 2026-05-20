@@ -1,6 +1,6 @@
-import config from "../../config/index.js";
-import { pool } from "../../db/index.js";
-import type { IUser } from "./auth.interfaces.js";
+import config from "../../config/index";
+import { pool } from "../../db/index";
+import type { IUser } from "./auth.interfaces";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken'
 import type { JwtPayload, SignOptions } from 'jsonwebtoken'

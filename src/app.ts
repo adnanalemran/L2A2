@@ -1,8 +1,8 @@
 import express from 'express'
 import type { Application, Request, Response } from 'express'
-import { globalErrorHandler } from './middleware/globalErrorHandler.js';
-import { authRoute } from './modules/auth/auth.route.js';
-import { issuesRoute } from './modules/issues/issues.route.js';
+import { globalErrorHandler } from './middleware/globalErrorHandler';
+import { authRoute } from './modules/auth/auth.route';
+import { issuesRoute } from './modules/issues/issues.route';
  
 export const app: Application = express()
 

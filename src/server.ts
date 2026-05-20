@@ -1,8 +1,8 @@
 
-import { initDB } from './db/index.js';
+import { initDB } from './db/index';
 
-import config from './config/index.js';
-import { app } from './app.js';
+import config from './config/index';
+import { app } from './app';
 
 const main = () => {
 

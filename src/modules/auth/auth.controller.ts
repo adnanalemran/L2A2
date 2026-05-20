@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express'
-import { authService } from "./auth.service.js";
-import { sendSuccess, sendError } from "../../utility/sendResponse.js";
+import { authService } from "./auth.service";
+import { sendSuccess, sendError } from "../../utility/sendResponse";
 
 const createUser = (async (req: Request, res: Response) => {
     try {

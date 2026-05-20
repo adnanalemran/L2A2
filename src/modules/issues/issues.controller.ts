@@ -1,6 +1,6 @@
-import { issuesService } from "./issues.service.js";
+import { issuesService } from "./issues.service";
 import type { Request, Response } from "express";
-import { sendError, sendSuccess } from "../../utility/sendResponse.js";
+import { sendError, sendSuccess } from "../../utility/sendResponse";
 
 const createIssue = (async (req: Request, res: Response) => {
     try {

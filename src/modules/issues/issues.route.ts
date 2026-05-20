@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { issuesController } from "./issues.controller.js";
-import { authenticateToken } from "../../middleware/authenticateToken.js";
+import { issuesController } from "./issues.controller";
+import { authenticateToken } from "../../middleware/authenticateToken";
  
 
  
