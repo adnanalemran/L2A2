@@ -20,7 +20,7 @@ const singleIssue = (async (req: Request, res: Response) => {
     try {
         const data = await issuesService.getIssueByIdIntoDB(req.params.id as string);
         const { reporter_id: _, ...issueData } = data
-        return sendSuccess(res, issueData, 200, "Issue found successfully");
+        return sendSuccess(res, issueData, 200);
     }
     catch (err: any) {
         return sendError(res, err.message, 500, "Failed to find issue")
@@ -30,7 +30,7 @@ const singleIssue = (async (req: Request, res: Response) => {
 const getAllIssues = (async (req: Request, res: Response) => {
     try {
         const data = await issuesService.getAllIssuesIntoDB(req.query);
-        return sendSuccess(res, data, 200, "Issues found successfully");
+        return sendSuccess(res, data, 200);
     }
     catch (err: any) {
         return sendError(res, err.message, 500, "Failed to find issues")
