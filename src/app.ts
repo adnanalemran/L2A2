@@ -4,6 +4,7 @@ import { authRoute } from './modules/auth/auth.route.js';
  
 export const app: Application = express()
 
+// Middleware
 app.use(express.json())
 app.use(express.text())
 app.use(express.urlencoded({ extended: true }))

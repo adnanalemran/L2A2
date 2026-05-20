@@ -12,9 +12,10 @@ const sendResponse = <T>(res: Response, payload: TResponse<T>) => {
     const response: any = {
         success: payload.success,
         message: payload.message,
-        data: payload.data ?? null,
     };
-    if (payload.error !== undefined) {
+    if (payload.error === undefined) {
+        response.data = payload.data ?? null;
+    } else {
         response.error = payload.error;
     }
     res.status(payload.status).json(response);
