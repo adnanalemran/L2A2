@@ -111,8 +111,49 @@ const getAllIssuesIntoDB = async (queryOptions: any) => {
     }
 };
 
+
+const updateIssueInDB = async (id: string, user: any, payload: any) => {
+    try {
+
+        const { title, description, type, status } = payload;
+        //find issue by id
+        const productResult = await pool.query(`SELECT * FROM issues WHERE id = $1`, [id]);
+        //find user by user id and issue id
+        const ownerResult = await pool.query(`SELECT * FROM users WHERE id = $1`, [productResult.rows[0].reporter_id]);
+        if (ownerResult.rows[0].id === user.id && ownerResult.rows[0].role === "maintainer") {
+
+            //update issue
+            const result = await pool.query(
+                `UPDATE issues SET title = COALESCE($1, title), description = COALESCE($2, description), type = COALESCE($3, type), status = COALESCE($4, status) WHERE id = $5 RETURNING *`,
+                [title, description, type, status, id]
+            );
+            return result.rows[0];
+        }
+        if (ownerResult.rows[0].id !== user.id) {
+            return "You are not this issue's reporter";
+        }
+        if (ownerResult.rows[0].role !== "maintainer") {
+            return "You are not a maintainer";
+        }
+        else {
+            throw new Error("You are not authorized to update this issue");
+        }
+
+
+
+    } catch (err: any) {
+        throw new Error(err?.message || "Failed to update issue");
+    }
+}
+
+
+
+
+
+
 export const issuesService = {
     createIssueIntoDB,
     getIssueByIdIntoDB,
-    getAllIssuesIntoDB
+    getAllIssuesIntoDB,
+    updateIssueInDB
 }

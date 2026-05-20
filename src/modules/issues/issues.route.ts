@@ -15,4 +15,4 @@ router.get('/',  issuesController.getAllIssues)
 
 router.get('/:id',  issuesController.singleIssue)
 
-
+router.patch('/:id', authenticateToken, issuesController.updateIssue)
