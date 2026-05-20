@@ -1,8 +1,9 @@
-import config from "../../config/index.ts";
-import { pool } from "../../db/index.ts";
-import { IUser } from "./auth.interfaces.ts";
+import config from "../../config/index.js";
+import { pool } from "../../db/index.js";
+import type { IUser } from "./auth.interfaces.js";
 import bcrypt from "bcryptjs";
-import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
+import type { JwtPayload, SignOptions } from 'jsonwebtoken'
 const createUserIntoDB = async (payload: IUser) => {
     const { name, email, password, role } = payload
     const hashedPassword = await bcrypt.hash(password, 10);

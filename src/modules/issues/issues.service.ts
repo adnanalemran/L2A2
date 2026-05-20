@@ -1,4 +1,4 @@
-import { pool } from "../../db/index.ts";
+import { pool } from "../../db/index.js";
 
 const createIssueIntoDB = async (payload: any) => {
     const { title, description, type, status = "open", reporter_id } = payload;

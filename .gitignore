@@ -1,2 +1,9 @@
-/.env
-/node_modules
+node_modules/
+dist/
+.env
+server.log
+src/**/*.js
+src/**/*.js.map
+src/**/*.d.ts
+src/**/*.d.ts.map
+.vercel

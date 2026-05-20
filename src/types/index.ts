@@ -1,3 +1,3 @@
  
 
-export type ROLES = "contributor " | "maintainer" 
+export type ROLES = "contributor" | "maintainer"
