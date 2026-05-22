@@ -16,7 +16,9 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
         const userID = decoded.id;
         //user find by id from database and attach to req object
         const validateUserData = await pool.query(`SELECT * FROM users WHERE id = $1`, [userID]);
-        !validateUserData.rows.length && res.status(401).json({ message: 'Unauthorized' });
+        if (!validateUserData.rows.length) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
         req.decodedToken = { ...decoded, ...validateUserData.rows[0] };
     } catch {
         return res.status(401).json({ message: 'Unauthorized' });

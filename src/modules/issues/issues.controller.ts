@@ -66,11 +66,10 @@ const updateIssue = (async (req: Request<{ id: string }, Issue | string, UpdateI
         const user = req.decodedToken as JwtPayload;
 
         const data = await issuesService.updateIssueInDB(id as string, user as unknown as Reporter , req.body);
-       if (data.status === 200) {
-            return sendSuccess(res, data.data, data.status);
-        } else {
-            return sendError(res, data.data, data.status, "Aunthorization error");
+        if (data.status === 200) {
+            return sendSuccess(res, data.data, data.status, "Issue updated successfully");
         }
+        return sendError(res, data.data, data.status, data.data as string);
     }
     catch (err: unknown) {
         if (err instanceof HttpError) {
@@ -86,13 +85,15 @@ const deleteIssue = (async (req: Request<{ id: string }>, res: Response) => {
         const { id } = req.params;
         const user = req.decodedToken as JwtPayload ;
         const userPayload = user as unknown as Reporter ;
-        if (userPayload?.role === "maintainer") {
-            await issuesService.deleteIssueFromDB(id as string);
-
-            return sendSuccess(res, undefined, 200, "Issue deleted successfully");
-        } else {
-            return sendError(res, "You are not a maintainer", 403, "Unauthorized");
+        if (userPayload?.role !== "maintainer") {
+            return sendError(res, "You are not a maintainer", 403, "Forbidden");
         }
+
+        const result = await issuesService.deleteIssueFromDB(id as string);
+        if (result.status === 404) {
+            return sendError(res, result.data, 404, "Issue not found");
+        }
+        return sendSuccess(res, undefined, 200, "Issue deleted successfully");
     }
     catch (err: unknown) {
         if (err instanceof HttpError) {
